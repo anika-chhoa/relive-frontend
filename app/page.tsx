@@ -1,3 +1,4 @@
+import FeaturedListings from "@/components/FeaturedListings";
 import TestimonialsSection from "@/components/TestimonialsSection";
 
 export default function HomePage() {
@@ -11,12 +12,12 @@ export default function HomePage() {
           Homepage sections land here next.
         </h1>
         <p className="mt-4 text-ink-muted">
-          Navbar, Login, Register, Add Item, Explore and Details are wired
-          up — Hero, Categories, Featured Listings and the rest of the
-          homepage will be built in the next passes.
+          Hero and Categories are still coming — Featured Listings and
+          Testimonials are live below.
         </p>
       </div>
 
+      <FeaturedListings />
       <TestimonialsSection />
     </div>
   );
