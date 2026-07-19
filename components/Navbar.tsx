@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Menu, X, Plus } from "lucide-react";
 import { logout } from "@/lib/api";
 import { useAppSession } from "@/lib/useAppSession";
+import { Menu, Plus, Shield, X } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface NavLink {
   href: string;
@@ -68,7 +68,10 @@ export default function Navbar() {
             </div>
           ) : isLoggedIn ? (
             <>
-              <Link href="/items/add" className="btn btn-primary btn-sm gap-1.5 shadow-soft">
+              <Link
+                href="/items/add"
+                className="btn btn-primary btn-sm gap-1.5 shadow-soft"
+              >
                 <Plus size={16} strokeWidth={2.5} />
                 Sell
               </Link>
@@ -108,8 +111,21 @@ export default function Navbar() {
                     </div>
                   </li>
                   <div className="my-1 h-px bg-border" />
+                  {user?.isAdmin && (
+                    <li>
+                      <Link
+                        href="/admin"
+                        className="rounded-field text-sm text-ink-muted"
+                      >
+                        <Shield size={14} /> Admin
+                      </Link>
+                    </li>
+                  )}
                   <li>
-                    <Link href="/profile" className="rounded-field text-sm text-ink-muted">
+                    <Link
+                      href="/profile"
+                      className="rounded-field text-sm text-ink-muted"
+                    >
                       Profile
                     </Link>
                   </li>
@@ -128,10 +144,16 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" className="btn btn-ghost btn-sm text-ink-muted">
+              <Link
+                href="/login"
+                className="btn btn-ghost btn-sm text-ink-muted"
+              >
                 Login
               </Link>
-              <Link href="/register" className="btn btn-primary btn-sm shadow-soft">
+              <Link
+                href="/register"
+                className="btn btn-primary btn-sm shadow-soft"
+              >
                 Register
               </Link>
             </>
@@ -171,7 +193,18 @@ export default function Navbar() {
                   <Plus size={16} />
                   Sell an item
                 </Link>
-                <Link href="/profile" className="btn btn-ghost justify-start text-ink-muted">
+                {user?.isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="btn btn-ghost justify-start text-ink-muted"
+                  >
+                    <Shield size={15} /> Admin
+                  </Link>
+                )}
+                <Link
+                  href="/profile"
+                  className="btn btn-ghost justify-start text-ink-muted"
+                >
                   Profile
                 </Link>
               </>

@@ -3,6 +3,7 @@ export interface RelivUser {
   name?: string;
   email?: string;
   image?: string | null;
+   isAdmin?: boolean;
 }
 
 export type ItemCondition = "Like New" | "Good" | "Fair" | "Needs Repair";
@@ -123,4 +124,70 @@ export interface ItemsListResponse {
   total: number;
   page: number;
   limit: number;
+}
+
+export interface DashboardStats {
+  activeListings: number;
+  totalSalesAmount: number;
+  salesCount: number;
+  itemsPurchased: number;
+  totalPurchasesAmount: number;
+  sellerRating: number;
+  reviewCount: number;
+}
+
+export interface RecentSaleOrPurchase {
+  _id: string;
+  title: string;
+  price: number;
+  soldAt: string;
+  sellerName?: string;
+}
+
+export interface MonthlyTotal {
+  month: string;
+  total: number;
+}
+
+export interface CategoryCount {
+  category: string;
+  count: number;
+}
+
+export interface DashboardResponse {
+  stats: DashboardStats;
+  recentSales: RecentSaleOrPurchase[];
+  recentPurchases: RecentSaleOrPurchase[];
+  recentReviews: Review[];
+  salesOverTime: MonthlyTotal[];
+  categoryBreakdown: CategoryCount[];
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  totalListings: number;
+  totalGMV: number;
+  totalReviews: number;
+}
+
+export interface MonthlyCount {
+  month: string;
+  count: number;
+}
+
+export interface AdminOverviewResponse {
+  stats: AdminStats;
+  salesOverTime: MonthlyTotal[];
+  categoryBreakdown: CategoryCount[];
+  newUsersOverTime: MonthlyCount[];
+}
+
+export interface AdminUser {
+  id: string;
+  name?: string;
+  email?: string;
+  image?: string | null;
+  provider: "credentials" | "google";
+  suspended: boolean;
+  createdAt: string;
 }

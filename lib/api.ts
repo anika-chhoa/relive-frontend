@@ -13,6 +13,9 @@ import type {
   CheckoutSessionResponse,
   PaymentSessionStatus,
   RelivUser,
+  DashboardResponse,
+  AdminOverviewResponse,
+  AdminUser,
 } from "@/types/domain";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -293,4 +296,53 @@ export async function getPaymentSessionStatus(sessionId: string): Promise<Paymen
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not find this payment");
   return data as PaymentSessionStatus;
+}
+
+
+export async function getMyDashboard(): Promise<DashboardResponse> {
+  const res = await fetch(`${API_URL}/api/dashboard/me`, { credentials: "include" });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not load your dashboard");
+  return data as DashboardResponse;
+}
+
+export async function getAdminOverview(): Promise<AdminOverviewResponse> {
+  const res = await fetch(`${API_URL}/api/admin/overview`, { credentials: "include" });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not load admin overview");
+  return data as AdminOverviewResponse;
+}
+
+export async function getAdminItems(): Promise<{ items: Item[] }> {
+  const res = await fetch(`${API_URL}/api/admin/items`, { credentials: "include" });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not load listings");
+  return data as { items: Item[] };
+}
+
+export async function adminDeleteItem(id: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/admin/items/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not remove this listing");
+}
+
+export async function getAdminUsers(): Promise<{ users: AdminUser[] }> {
+  const res = await fetch(`${API_URL}/api/admin/users`, { credentials: "include" });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not load users");
+  return data as { users: AdminUser[] };
+}
+
+export async function toggleSuspendUser(id: string, suspended: boolean): Promise<void> {
+  const res = await fetch(`${API_URL}/api/admin/users/${id}/suspend`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ suspended }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not update this user");
 }
