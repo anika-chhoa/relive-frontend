@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Background & surface */
+  --color-bg: #FFFBFE;
+  --color-surface: #FFFFFF;
+  --color-border: #EDE6F3;
+
+  /* Text */
+  --color-ink: #2B2440;
+  --color-ink-muted: #6B6478;
+  --color-ink-faint: #9992A6;
+
+  /* Brand pastels (decorative, gradients, chips) */
+  --color-lavender: #CDB4DB;
+  --color-pink: #FFC8DD;
+  --color-rose: #FFAFCC;
+  --color-sky: #BDE0FE;
+  --color-blue: #A2D2FF;
+
+  /* Accessible CTA (deepened rose for contrast) */
+  --color-cta: #D6608F;
+  --color-cta-hover: #C24E7C;
+  --color-cta-tint: #FFF0F5;
+
+  /* Semantic */
+  --color-error: #D14343;
+  --color-success: #3C9A5F;
+
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 20px;
+  --radius-input: 12px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 8px 30px -12px rgba(43, 36, 64, 0.18);
+  --shadow-lift: 0 14px 40px -14px rgba(43, 36, 64, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+input {
+  font-family: var(--font-body);
+}
+
+/* Aura Ring — signature mark. Conic gradient ring with a small gap,
+   symbolizing an object's life continuing in a circle. */
+.aura-ring {
+  --ring-size: 34px;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  border-radius: 50%;
+  background: conic-gradient(
+    from -40deg,
+    var(--color-lavender) 0deg,
+    var(--color-pink) 80deg,
+    var(--color-rose) 150deg,
+    var(--color-sky) 230deg,
+    var(--color-blue) 300deg,
+    transparent 328deg,
+    transparent 360deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  flex-shrink: 0;
+}
+
+/* Large ambient aura used behind the auth branding panel */
+.aura-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.aura-field::before,
+.aura-field::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.75;
+}
+
+.aura-field::before {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle at 30% 30%, var(--color-rose), transparent 70%),
+              radial-gradient(circle at 70% 70%, var(--color-blue), transparent 70%);
+  top: -120px;
+  left: -100px;
+}
+
+.aura-field::after {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle at 60% 40%, var(--color-lavender), transparent 70%),
+              radial-gradient(circle at 30% 70%, var(--color-sky), transparent 70%);
+  bottom: -140px;
+  right: -100px;
+}
+
+/* Subtle grain so the gradient doesn't look flat/plastic */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .transition-standard {
+    transition: all 0.2s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
