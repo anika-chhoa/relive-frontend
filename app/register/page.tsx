@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import Link from "next/link";
-import { Eye, EyeOff, Camera, Loader2, X } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleButton from "@/components/GoogleButton";
 import { registerWithCredentials, uploadAvatarToCloudinary } from "@/lib/api";
 import { signIn } from "@/lib/authClient";
+import { Camera, Eye, EyeOff, Loader2, X } from "lucide-react";
+import Link from "next/link";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -54,7 +54,9 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
-  const [touched, setTouched] = useState<Partial<Record<keyof RegisterValues, boolean>>>({});
+  const [touched, setTouched] = useState<
+    Partial<Record<keyof RegisterValues, boolean>>
+  >({});
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
@@ -110,7 +112,12 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setTouched({ name: true, email: true, password: true, confirmPassword: true });
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    });
     if (Object.keys(errors).length > 0) return;
 
     setSubmitting(true);
@@ -124,14 +131,19 @@ export default function RegisterPage() {
       });
       window.location.href = "/";
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Could not create your account");
+      setFormError(
+        err instanceof Error ? err.message : "Could not create your account",
+      );
     } finally {
       setSubmitting(false);
     }
   }
 
   async function handleGoogle() {
-    await signIn.social({ provider: "google", callbackURL: "/auth/callback" });
+    await signIn.social({
+      provider: "google",
+      callbackURL: `${window.location.origin}/auth/callback`,
+    });
   }
 
   return (
@@ -199,7 +211,10 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-ink">
+          <label
+            htmlFor="name"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
             Full name
           </label>
           <input
@@ -220,7 +235,10 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="reg-email" className="mb-1.5 block text-sm font-medium text-ink">
+          <label
+            htmlFor="reg-email"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
             Email
           </label>
           <input
@@ -241,7 +259,10 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="reg-password" className="mb-1.5 block text-sm font-medium text-ink">
+          <label
+            htmlFor="reg-password"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
             Password
           </label>
           <div className="relative">
@@ -272,7 +293,10 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="confirm-password" className="mb-1.5 block text-sm font-medium text-ink">
+          <label
+            htmlFor="confirm-password"
+            className="mb-1.5 block text-sm font-medium text-ink"
+          >
             Confirm password
           </label>
           <input
@@ -284,11 +308,15 @@ export default function RegisterPage() {
             onBlur={() => handleBlur("confirmPassword")}
             placeholder="Re-enter your password"
             className={`input input-bordered w-full text-sm ${
-              touched.confirmPassword && errors.confirmPassword ? "input-error" : ""
+              touched.confirmPassword && errors.confirmPassword
+                ? "input-error"
+                : ""
             }`}
           />
           {touched.confirmPassword && errors.confirmPassword && (
-            <p className="mt-1.5 text-xs text-error">{errors.confirmPassword}</p>
+            <p className="mt-1.5 text-xs text-error">
+              {errors.confirmPassword}
+            </p>
           )}
         </div>
 
@@ -297,7 +325,9 @@ export default function RegisterPage() {
           disabled={submitting || avatarUploading}
           className="btn btn-primary mt-1 w-full"
         >
-          {submitting && <span className="loading loading-spinner loading-xs" />}
+          {submitting && (
+            <span className="loading loading-spinner loading-xs" />
+          )}
           {submitting ? "Creating account…" : "Create account"}
         </button>
 
@@ -307,7 +337,10 @@ export default function RegisterPage() {
 
         <p className="mt-2 text-center text-sm text-ink-muted">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-cta hover:underline">
+          <Link
+            href="/login"
+            className="font-semibold text-cta hover:underline"
+          >
             Log in
           </Link>
         </p>

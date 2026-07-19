@@ -1,24 +1,28 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, Pencil, Trash2, Loader2, Plus, PackageOpen } from "lucide-react";
+import { deleteItem, getMyItems } from "@/lib/api";
 import { useAppSession } from "@/lib/useAppSession";
-import { getMyItems, deleteItem } from "@/lib/api";
 import type { Item } from "@/types/domain";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Eye, Loader2, PackageOpen, Pencil, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 function formatPrice(price: number): string {
   return `৳${price.toLocaleString("en-BD")}`;
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "badge-success",
+  active: "badge-success text-gray-50",
   sold: "badge-neutral",
 };
 
@@ -64,7 +68,9 @@ export default function ManageItemsPage() {
       dialogRef.current?.close();
       setPendingDelete(null);
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : "Could not delete this listing");
+      setDeleteError(
+        err instanceof Error ? err.message : "Could not delete this listing",
+      );
     } finally {
       setDeleting(false);
     }
@@ -83,8 +89,12 @@ export default function ManageItemsPage() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-cta">Your listings</p>
-          <h1 className="mt-1 font-display text-3xl font-medium text-ink">Manage Items</h1>
+          <p className="text-xs font-semibold uppercase tracking-wider text-cta">
+            Your listings
+          </p>
+          <h1 className="mt-1 font-display text-3xl font-medium text-ink">
+            Manage Items
+          </h1>
         </div>
         <Link href="/items/add" className="btn btn-primary btn-sm gap-1.5">
           <Plus size={16} /> Add Item
@@ -102,7 +112,9 @@ export default function ManageItemsPage() {
             key={stat.label}
             className="rounded-card border border-border bg-surface p-4 text-center sm:text-left"
           >
-            <p className="font-display text-2xl font-semibold text-ink">{stat.value}</p>
+            <p className="font-display text-2xl font-semibold text-ink">
+              {stat.value}
+            </p>
             <p className="text-xs text-ink-muted">{stat.label}</p>
           </div>
         ))}
@@ -115,7 +127,9 @@ export default function ManageItemsPage() {
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-border py-16 text-center">
             <PackageOpen size={28} className="text-ink-faint" />
-            <p className="text-sm text-ink-muted">You haven&apos;t listed anything yet.</p>
+            <p className="text-sm text-ink-muted">
+              You haven&apos;t listed anything yet.
+            </p>
             <Link href="/items/add" className="btn btn-primary btn-sm mt-1">
               List your first item
             </Link>
@@ -152,18 +166,28 @@ export default function ManageItemsPage() {
                             )}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-ink">{item.title}</p>
-                            <p className="truncate text-xs text-ink-faint">{item.category}</p>
+                            <p className="truncate text-sm font-medium text-ink">
+                              {item.title}
+                            </p>
+                            <p className="truncate text-xs text-ink-faint">
+                              {item.category}
+                            </p>
                           </div>
                         </div>
                       </td>
-                      <td className="text-sm font-medium text-ink">{formatPrice(item.price)}</td>
+                      <td className="text-sm font-medium text-ink">
+                        {formatPrice(item.price)}
+                      </td>
                       <td>
-                        <span className={`badge badge-sm capitalize ${STATUS_STYLES[item.status] || "badge-ghost"}`}>
+                        <span
+                          className={`badge badge-sm capitalize ${STATUS_STYLES[item.status] || "badge-ghost"}`}
+                        >
                           {item.status}
                         </span>
                       </td>
-                      <td className="text-sm text-ink-muted">{formatDate(item.createdAt)}</td>
+                      <td className="text-sm text-ink-muted">
+                        {formatDate(item.createdAt)}
+                      </td>
                       <td>
                         <div className="flex items-center justify-end gap-1">
                           <Link
@@ -177,7 +201,9 @@ export default function ManageItemsPage() {
                           <Link
                             href={isSold ? "#" : `/items/${item._id}/edit`}
                             aria-disabled={isSold}
-                            title={isSold ? "Sold listings can't be edited" : "Edit"}
+                            title={
+                              isSold ? "Sold listings can't be edited" : "Edit"
+                            }
                             className={`btn btn-ghost btn-xs ${isSold ? "btn-disabled" : ""}`}
                           >
                             <Pencil size={15} />
@@ -186,7 +212,11 @@ export default function ManageItemsPage() {
                             type="button"
                             onClick={() => !isSold && openDeleteConfirm(item)}
                             disabled={isSold}
-                            title={isSold ? "Sold listings can't be deleted" : "Delete"}
+                            title={
+                              isSold
+                                ? "Sold listings can't be deleted"
+                                : "Delete"
+                            }
                             className="btn btn-ghost btn-xs text-error"
                           >
                             <Trash2 size={15} />
@@ -205,16 +235,22 @@ export default function ManageItemsPage() {
       {/* Delete confirmation modal */}
       <dialog ref={dialogRef} className="modal">
         <div className="modal-box max-w-sm rounded-card">
-          <h3 className="font-display text-lg font-medium text-ink">Delete this listing?</h3>
+          <h3 className="font-display text-lg font-medium text-ink">
+            Delete this listing?
+          </h3>
           <p className="mt-2 text-sm text-ink-muted">
             {pendingDelete && (
               <>
-                <span className="font-medium text-ink">&ldquo;{pendingDelete.title}&rdquo;</span>{" "}
+                <span className="font-medium text-ink">
+                  &ldquo;{pendingDelete.title}&rdquo;
+                </span>{" "}
               </>
             )}
             will be removed from Relive. This can&apos;t be undone.
           </p>
-          {deleteError && <p className="mt-2 text-xs text-error">{deleteError}</p>}
+          {deleteError && (
+            <p className="mt-2 text-xs text-error">{deleteError}</p>
+          )}
           <div className="modal-action">
             <form method="dialog" className="flex gap-2">
               <button className="btn btn-ghost btn-sm">Cancel</button>

@@ -72,8 +72,11 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
-    await signIn.social({ provider: "google", callbackURL: "/auth/callback" });
-  }
+  await signIn.social({
+    provider: "google",
+    callbackURL: `${window.location.origin}/auth/callback`,
+  });
+}
 
   return (
     <AuthLayout
