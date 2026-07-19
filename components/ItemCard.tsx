@@ -1,8 +1,8 @@
+import StarRating from "@/components/StarRating";
+import type { Item } from "@/types/domain";
+import { MapPin } from "lucide-react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { MapPin } from "lucide-react";
-import type { Item } from "@/types/domain";
-import StarRating from "@/components/StarRating";
 
 const CONDITION_STYLES: Record<string, string> = {
   "Like New": "badge-success text-gray-50",
@@ -24,6 +24,9 @@ export default function ItemCard({ item }: { item: Item }) {
             Sold
           </span>
         )}
+        <span className="badge badge-sm absolute right-2 top-2 z-10 border-none bg-green-100 text-ink shadow-soft backdrop-blur-sm">
+          {item.category}
+        </span>
         {item.images?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -33,15 +36,26 @@ export default function ItemCard({ item }: { item: Item }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="aura-ring" style={{ "--ring-size": "48px" } as CSSProperties} />
+            <span
+              className="aura-ring"
+              style={{ "--ring-size": "48px" } as CSSProperties}
+            />
           </div>
         )}
       </figure>
 
       <div className="card-body gap-2 p-4">
-        <h3 className="truncate font-display text-base font-medium text-ink">{item.title}</h3>
-        <StarRating value={item.avgRating || 0} count={item.reviewCount || 0} size={12} />
-        <p className="line-clamp-2 text-sm text-ink-muted">{item.shortDescription}</p>
+        <h3 className="truncate font-display text-base font-medium text-ink">
+          {item.title}
+        </h3>
+        <StarRating
+          value={item.avgRating || 0}
+          count={item.reviewCount || 0}
+          size={12}
+        />
+        <p className="line-clamp-2 text-sm text-ink-muted">
+          {item.shortDescription}
+        </p>
 
         <div className="mt-1 flex items-center justify-between">
           <span className="font-display text-lg font-semibold text-cta">
