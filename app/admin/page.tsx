@@ -139,7 +139,7 @@ function OverviewTab() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#EDE6F3" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6B6478" }} />
                 <YAxis tick={{ fontSize: 11, fill: "#6B6478" }} />
-                <Tooltip formatter={(v: number) => formatPrice(v)} />
+                <Tooltip formatter={(value) => formatPrice(Number(value))} />
                 <Line type="monotone" dataKey="total" stroke="#D6608F" strokeWidth={2.5} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -160,7 +160,7 @@ function OverviewTab() {
                   innerRadius={55}
                   outerRadius={90}
                   paddingAngle={2}
-                  label={(d) => d.category}
+                  label={(d: any) => d.category}
                 >
                   {data.categoryBreakdown.map((_, i) => (
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />

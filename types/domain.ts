@@ -17,7 +17,7 @@ export interface Item {
   location: string;
   shortDescription: string;
   fullDescription: string;
-  images: string[]; // images[0] is the cover image; max 7 total
+  images: string[]; 
   sellerId: string;
   sellerName?: string;
   status: "active" | "sold" | "removed";
@@ -190,4 +190,9 @@ export interface AdminUser {
   provider: "credentials" | "google";
   suspended: boolean;
   createdAt: string;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
 }
