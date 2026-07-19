@@ -16,6 +16,8 @@ import type {
   DashboardResponse,
   AdminOverviewResponse,
   AdminUser,
+  CategoryCountItem,
+  PublicStats,
 } from "@/types/domain";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -345,4 +347,19 @@ export async function toggleSuspendUser(id: string, suspended: boolean): Promise
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not update this user");
+}
+
+
+export async function getCategoryCounts(): Promise<CategoryCountItem[]> {
+  const res = await fetch(`${API_URL}/api/items/category-counts`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not load categories");
+  return data.counts as CategoryCountItem[];
+}
+
+export async function getPublicStats(): Promise<PublicStats> {
+  const res = await fetch(`${API_URL}/api/stats/public`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Could not load stats");
+  return data as PublicStats;
 }

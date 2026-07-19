@@ -196,3 +196,15 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
+
+export interface CategoryCountItem {
+  category: string;
+  count: number;
+}
+
+export interface PublicStats {
+  totalUsers: number;
+  totalListings: number;
+  totalGMV: number;
+  totalReviews: number;
+}
