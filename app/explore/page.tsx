@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-import { getItems } from "@/lib/api";
-import { CATEGORIES } from "@/lib/constants";
 import ItemCard from "@/components/ItemCard";
 import ItemCardSkeleton from "@/components/ItemCardSkeleton";
+import { getItems } from "@/lib/api";
+import { CATEGORIES } from "@/lib/constants";
 import type { SortOption } from "@/types/domain";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "newest", label: "Newest first" },
@@ -17,29 +18,55 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 
 const LIMIT = 8;
 
-export default function ExplorePage() {
-  const [searchInput, setSearchInput] = useState("");
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+function ExploreContent() {
+  const searchParams = useSearchParams();
+
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get("search") || "",
+  );
+  const [search, setSearch] = useState(() => searchParams.get("search") || "");
+  const [category, setCategory] = useState(
+    () => searchParams.get("category") || "",
+  );
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Debounce the search box so we're not firing a request per keystroke.
+  // If the URL's ?search= / ?category= change after mount (e.g. clicking
+  // another category chip while already on this page), pick that up too.
   useEffect(() => {
-    const t = setTimeout(() => {
+    const urlSearch = searchParams.get("search") || "";
+    const urlCategory = searchParams.get("category") || "";
+    setSearchInput(urlSearch);
+    setSearch(urlSearch);
+    setCategory(urlCategory);
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
       setSearch(searchInput);
       setPage(1);
-    }, 400);
-    return () => clearTimeout(t);
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
   }, [searchInput]);
 
   const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: ["items", { search, category, minPrice, maxPrice, sort, page }],
     queryFn: () =>
-      getItems({ search, category, minPrice, maxPrice, sort, page, limit: LIMIT }),
+      getItems({
+        search,
+        category,
+        minPrice,
+        maxPrice,
+        sort,
+        page,
+        limit: LIMIT,
+      }),
     placeholderData: keepPreviousData,
   });
 
@@ -63,7 +90,9 @@ export default function ExplorePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <p className="text-xs font-semibold uppercase tracking-wider text-cta">Explore</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-cta">
+          Explore
+        </p>
         <h1 className="mt-1 font-display text-3xl font-medium text-ink">
           Find your next favorite thing
         </h1>
@@ -103,7 +132,9 @@ export default function ExplorePage() {
 
       <div className="flex flex-col gap-8 lg:flex-row">
         {/* Filters sidebar */}
-        <aside className={`w-full shrink-0 lg:block lg:w-64 ${filtersOpen ? "block" : "hidden"}`}>
+        <aside
+          className={`w-full shrink-0 lg:block lg:w-64 ${filtersOpen ? "block" : "hidden"}`}
+        >
           <div className="rounded-card border border-border bg-surface p-5">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-ink">Filters</h2>
@@ -123,12 +154,16 @@ export default function ExplorePage() {
               </label>
               <select
                 value={category}
-                onChange={(e) => handleFilterChange(setCategory)(e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange(setCategory)(e.target.value)
+                }
                 className="select select-bordered select-sm w-full"
               >
                 <option value="">All categories</option>
                 {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
@@ -142,7 +177,9 @@ export default function ExplorePage() {
                   type="number"
                   min="0"
                   value={minPrice}
-                  onChange={(e) => handleFilterChange(setMinPrice)(e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange(setMinPrice)(e.target.value)
+                  }
                   placeholder="Min"
                   className="input input-bordered input-sm w-full"
                 />
@@ -151,7 +188,9 @@ export default function ExplorePage() {
                   type="number"
                   min="0"
                   value={maxPrice}
-                  onChange={(e) => handleFilterChange(setMaxPrice)(e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange(setMaxPrice)(e.target.value)
+                  }
                   placeholder="Max"
                   className="input input-bordered input-sm w-full"
                 />
@@ -172,7 +211,9 @@ export default function ExplorePage() {
               className="select select-bordered select-sm"
             >
               {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
           </div>
@@ -185,8 +226,12 @@ export default function ExplorePage() {
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {isLoading
-              ? Array.from({ length: LIMIT }).map((_, i) => <ItemCardSkeleton key={i} />)
-              : data?.items.map((item) => <ItemCard key={item._id} item={item} />)}
+              ? Array.from({ length: LIMIT }).map((_, i) => (
+                  <ItemCardSkeleton key={i} />
+                ))
+              : data?.items.map((item) => (
+                  <ItemCard key={item._id} item={item} />
+                ))}
           </div>
 
           {!isLoading && data?.items.length === 0 && (
@@ -227,10 +272,20 @@ export default function ExplorePage() {
           )}
 
           {isFetching && !isLoading && (
-            <p className="mt-3 text-center text-xs text-ink-faint">Updating results…</p>
+            <p className="mt-3 text-center text-xs text-ink-faint">
+              Updating results…
+            </p>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense fallback={null}>
+      <ExploreContent />
+    </Suspense>
   );
 }
