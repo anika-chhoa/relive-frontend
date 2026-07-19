@@ -1,0 +1,74 @@
+"use client";
+
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Smartphone,
+  Sofa,
+  Shirt,
+  Car,
+  BookOpen,
+  Dumbbell,
+  Baby,
+  Refrigerator,
+  type LucideIcon,
+} from "lucide-react";
+import { getCategoryCounts } from "@/lib/api";
+import { CATEGORIES } from "@/lib/constants";
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  "Electronics & Gadgets": Smartphone,
+  "Furniture & Home": Sofa,
+  "Fashion & Accessories": Shirt,
+  Vehicles: Car,
+  "Books & Stationery": BookOpen,
+  "Sports & Outdoor": Dumbbell,
+  "Baby & Kids": Baby,
+  "Home Appliances": Refrigerator,
+};
+
+export default function CategoryGrid() {
+  const { data } = useQuery({
+    queryKey: ["category-counts"],
+    queryFn: getCategoryCounts,
+  });
+
+  const countFor = (category: string) =>
+    data?.find((c) => c.category === category)?.count || 0;
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <p className="text-xs font-semibold uppercase tracking-wider text-cta">
+          Start browsing
+        </p>
+        <h2 className="mt-1 font-display text-3xl font-medium text-ink">Browse by Category</h2>
+        <p className="mt-2 text-sm text-ink-muted">Find exactly what you're looking for</p>
+      </div>
+
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {CATEGORIES.map((category) => {
+          const Icon = CATEGORY_ICONS[category] || Smartphone;
+          const count = countFor(category);
+          return (
+            <Link
+              key={category}
+              href={`/explore?category=${encodeURIComponent(category)}`}
+              className="group flex flex-col items-center gap-3 rounded-card border border-border bg-surface p-6 text-center shadow-soft transition-standard hover:-translate-y-1 hover:shadow-lift"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cta-tint text-cta transition-standard group-hover:bg-cta group-hover:text-white">
+                <Icon size={24} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-ink">{category}</p>
+                <p className="mt-0.5 text-xs text-ink-faint">
+                  {count > 0 ? `${count}+ items` : "New"}
+                </p>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
