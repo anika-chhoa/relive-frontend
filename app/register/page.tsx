@@ -4,10 +4,10 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleButton from "@/components/GoogleButton";
 import { registerWithCredentials, uploadAvatarToCloudinary } from "@/lib/api";
 import { signIn } from "@/lib/authClient";
-import toast from "react-hot-toast";
 import { Camera, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import toast from "react-hot-toast";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -133,7 +133,8 @@ export default function RegisterPage() {
       toast.success("Account created successfully!");
       window.location.href = "/";
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Could not create your account";
+      const msg =
+        err instanceof Error ? err.message : "Could not create your account";
       setFormError(msg);
       toast.error(msg);
     } finally {

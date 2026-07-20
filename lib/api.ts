@@ -1,26 +1,32 @@
 import type {
-  GenerateDescriptionInput,
-  GenerateDescriptionOutput,
-  ImproveDescriptionInput,
-  CreateItemPayload,
-  CreateItemResponse,
-  Item,
-  ItemsListParams,
-  ItemsListResponse,
-  SellerReviewsResponse,
-  Review,
-  CreateReviewPayload,
-  CheckoutSessionResponse,
-  PaymentSessionStatus,
-  RelivUser,
-  DashboardResponse,
   AdminOverviewResponse,
   AdminUser,
   CategoryCountItem,
+  CheckoutSessionResponse,
+  CreateItemPayload,
+  CreateItemResponse,
+  CreateReviewPayload,
+  DashboardResponse,
+  GenerateDescriptionInput,
+  GenerateDescriptionOutput,
+  ImproveDescriptionInput,
+  Item,
+  ItemsListParams,
+  ItemsListResponse,
+  PaymentSessionStatus,
   PublicStats,
+  RelivUser,
+  Review,
+  SellerReviewsResponse,
 } from "@/types/domain";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+export function notifyAuthStateChanged(): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("auth:session-changed"));
+  }
+}
 
 // Demo credentials — pre-seeded in the backend so the "Try demo login"
 // button on the Login page can auto-fill the form (not auto-submit).
@@ -61,6 +67,7 @@ export async function registerWithCredentials(input: {
   });
   if (!res.ok) throw new Error(await parseAuthError(res));
   const data: AuthResponse = await res.json();
+  notifyAuthStateChanged();
   return data.user;
 }
 
@@ -76,6 +83,7 @@ export async function loginWithCredentials(input: {
   });
   if (!res.ok) throw new Error(await parseAuthError(res));
   const data: AuthResponse = await res.json();
+  notifyAuthStateChanged();
   return data.user;
 }
 
@@ -89,6 +97,7 @@ export async function syncGoogleSession(): Promise<RelivUser> {
   });
   if (!res.ok) throw new Error("Could not complete Google sign-in");
   const data: AuthResponse = await res.json();
+  notifyAuthStateChanged();
   return data.user;
 }
 
@@ -106,6 +115,7 @@ export async function logout(): Promise<void> {
     method: "POST",
     credentials: "include",
   });
+  notifyAuthStateChanged();
 }
 
 export async function updateMyProfile(input: {
@@ -131,8 +141,13 @@ interface CloudinarySignatureResponse {
   folder: string;
 }
 
-async function requestSignature(kind: "avatar" | "item"): Promise<CloudinarySignatureResponse> {
-  const path = kind === "avatar" ? "/api/uploads/signature" : "/api/uploads/signature/item";
+async function requestSignature(
+  kind: "avatar" | "item",
+): Promise<CloudinarySignatureResponse> {
+  const path =
+    kind === "avatar"
+      ? "/api/uploads/signature"
+      : "/api/uploads/signature/item";
   const res = await fetch(`${API_URL}${path}`, {
     method: "POST",
     credentials: "include",
@@ -141,7 +156,10 @@ async function requestSignature(kind: "avatar" | "item"): Promise<CloudinarySign
   return res.json();
 }
 
-async function uploadToCloudinary(file: File, sig: CloudinarySignatureResponse): Promise<string> {
+async function uploadToCloudinary(
+  file: File,
+  sig: CloudinarySignatureResponse,
+): Promise<string> {
   const form = new FormData();
   form.append("file", file);
   form.append("api_key", sig.apiKey);
@@ -151,7 +169,7 @@ async function uploadToCloudinary(file: File, sig: CloudinarySignatureResponse):
 
   const uploadRes = await fetch(
     `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`,
-    { method: "POST", body: form }
+    { method: "POST", body: form },
   );
   if (!uploadRes.ok) throw new Error("Image upload failed");
   const data = await uploadRes.json();
@@ -175,7 +193,7 @@ export async function uploadItemImageToCloudinary(file: File): Promise<string> {
 // --- AI Smart Listing Assistant (Add Item page) -------------------------
 
 export async function generateListingDescription(
-  input: GenerateDescriptionInput
+  input: GenerateDescriptionInput,
 ): Promise<GenerateDescriptionOutput> {
   const res = await fetch(`${API_URL}/api/ai/generate-description`, {
     method: "POST",
@@ -184,11 +202,14 @@ export async function generateListingDescription(
     body: JSON.stringify(input),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Could not generate a description");
+  if (!res.ok)
+    throw new Error(data.error || "Could not generate a description");
   return data as GenerateDescriptionOutput;
 }
 
-export async function improveListingText(input: ImproveDescriptionInput): Promise<string> {
+export async function improveListingText(
+  input: ImproveDescriptionInput,
+): Promise<string> {
   const res = await fetch(`${API_URL}/api/ai/improve-description`, {
     method: "POST",
     credentials: "include",
@@ -202,7 +223,9 @@ export async function improveListingText(input: ImproveDescriptionInput): Promis
 
 // --- Items ---------------------------------------------------------------
 
-export async function createItem(payload: CreateItemPayload): Promise<CreateItemResponse> {
+export async function createItem(
+  payload: CreateItemPayload,
+): Promise<CreateItemResponse> {
   const res = await fetch(`${API_URL}/api/items`, {
     method: "POST",
     credentials: "include",
@@ -215,13 +238,18 @@ export async function createItem(payload: CreateItemPayload): Promise<CreateItem
 }
 
 export async function getMyItems(): Promise<{ items: Item[] }> {
-  const res = await fetch(`${API_URL}/api/items/mine`, { credentials: "include" });
+  const res = await fetch(`${API_URL}/api/items/mine`, {
+    credentials: "include",
+  });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load your listings");
   return data as { items: Item[] };
 }
 
-export async function updateItem(id: string, payload: CreateItemPayload): Promise<Item> {
+export async function updateItem(
+  id: string,
+  payload: CreateItemPayload,
+): Promise<Item> {
   const res = await fetch(`${API_URL}/api/items/${id}`, {
     method: "PUT",
     credentials: "include",
@@ -242,7 +270,9 @@ export async function deleteItem(id: string): Promise<void> {
   if (!res.ok) throw new Error(data.error || "Could not delete this listing");
 }
 
-export async function getItems(params: ItemsListParams): Promise<ItemsListResponse> {
+export async function getItems(
+  params: ItemsListParams,
+): Promise<ItemsListResponse> {
   const query = new URLSearchParams();
   if (params.search) query.set("search", params.search);
   if (params.category) query.set("category", params.category);
@@ -268,7 +298,9 @@ export async function getItemById(id: string): Promise<Item> {
 
 // --- Reviews ---------------------------------------------------------------
 
-export async function getSellerReviews(sellerId: string): Promise<SellerReviewsResponse> {
+export async function getSellerReviews(
+  sellerId: string,
+): Promise<SellerReviewsResponse> {
   const res = await fetch(`${API_URL}/api/reviews/seller/${sellerId}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load reviews");
@@ -282,7 +314,9 @@ export async function getFeaturedReviews(limit = 6): Promise<Review[]> {
   return data.reviews as Review[];
 }
 
-export async function createReview(payload: CreateReviewPayload): Promise<Review> {
+export async function createReview(
+  payload: CreateReviewPayload,
+): Promise<Review> {
   const res = await fetch(`${API_URL}/api/reviews`, {
     method: "POST",
     credentials: "include",
@@ -296,7 +330,9 @@ export async function createReview(payload: CreateReviewPayload): Promise<Review
 
 // --- Payments (Stripe) ------------------------------------------------
 
-export async function createCheckoutSession(itemId: string): Promise<CheckoutSessionResponse> {
+export async function createCheckoutSession(
+  itemId: string,
+): Promise<CheckoutSessionResponse> {
   const res = await fetch(`${API_URL}/api/payments/create-checkout-session`, {
     method: "POST",
     credentials: "include",
@@ -308,30 +344,37 @@ export async function createCheckoutSession(itemId: string): Promise<CheckoutSes
   return data as CheckoutSessionResponse;
 }
 
-export async function getPaymentSessionStatus(sessionId: string): Promise<PaymentSessionStatus> {
+export async function getPaymentSessionStatus(
+  sessionId: string,
+): Promise<PaymentSessionStatus> {
   const res = await fetch(`${API_URL}/api/payments/session/${sessionId}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not find this payment");
   return data as PaymentSessionStatus;
 }
 
-
 export async function getMyDashboard(): Promise<DashboardResponse> {
-  const res = await fetch(`${API_URL}/api/dashboard/me`, { credentials: "include" });
+  const res = await fetch(`${API_URL}/api/dashboard/me`, {
+    credentials: "include",
+  });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load your dashboard");
   return data as DashboardResponse;
 }
 
 export async function getAdminOverview(): Promise<AdminOverviewResponse> {
-  const res = await fetch(`${API_URL}/api/admin/overview`, { credentials: "include" });
+  const res = await fetch(`${API_URL}/api/admin/overview`, {
+    credentials: "include",
+  });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load admin overview");
   return data as AdminOverviewResponse;
 }
 
 export async function getAdminItems(): Promise<{ items: Item[] }> {
-  const res = await fetch(`${API_URL}/api/admin/items`, { credentials: "include" });
+  const res = await fetch(`${API_URL}/api/admin/items`, {
+    credentials: "include",
+  });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load listings");
   return data as { items: Item[] };
@@ -347,13 +390,18 @@ export async function adminDeleteItem(id: string): Promise<void> {
 }
 
 export async function getAdminUsers(): Promise<{ users: AdminUser[] }> {
-  const res = await fetch(`${API_URL}/api/admin/users`, { credentials: "include" });
+  const res = await fetch(`${API_URL}/api/admin/users`, {
+    credentials: "include",
+  });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load users");
   return data as { users: AdminUser[] };
 }
 
-export async function toggleSuspendUser(id: string, suspended: boolean): Promise<void> {
+export async function toggleSuspendUser(
+  id: string,
+  suspended: boolean,
+): Promise<void> {
   const res = await fetch(`${API_URL}/api/admin/users/${id}/suspend`, {
     method: "PATCH",
     credentials: "include",
@@ -363,7 +411,6 @@ export async function toggleSuspendUser(id: string, suspended: boolean): Promise
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Could not update this user");
 }
-
 
 export async function getCategoryCounts(): Promise<CategoryCountItem[]> {
   const res = await fetch(`${API_URL}/api/items/category-counts`);
