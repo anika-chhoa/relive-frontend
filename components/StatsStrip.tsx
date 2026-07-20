@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPublicStats } from "@/lib/api";
+import { motion } from "framer-motion";
 
 function useCountUp(target: number, active: boolean, duration = 1200) {
   const [value, setValue] = useState(0);
@@ -31,26 +32,24 @@ function formatPrice(price: number): string {
   return `৳${price.toLocaleString("en-BD")}`;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const statVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+};
+
 export default function StatsStrip() {
   const { data } = useQuery({ queryKey: ["public-stats"], queryFn: getPublicStats });
-  const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   const users = useCountUp(data?.totalUsers || 0, inView && Boolean(data));
   const listings = useCountUp(data?.totalListings || 0, inView && Boolean(data));
@@ -65,15 +64,25 @@ export default function StatsStrip() {
   ];
 
   return (
-    <section ref={ref} className="bg-ink py-12">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:grid-cols-4 sm:px-6 lg:px-8">
+    <motion.section
+      onViewportEnter={() => setInView(true)}
+      viewport={{ once: true, amount: 0.3 }}
+      className="bg-ink py-12"
+    >
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:grid-cols-4 sm:px-6 lg:px-8"
+      >
         {stats.map((s) => (
-          <div key={s.label} className="text-center">
+          <motion.div key={s.label} variants={statVariants} className="text-center">
             <p className="font-display text-3xl font-semibold text-white">{s.value}</p>
             <p className="mt-1 text-xs uppercase tracking-wide text-white/60">{s.label}</p>
-          </div>
+          </motion.div>
         ))}
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }

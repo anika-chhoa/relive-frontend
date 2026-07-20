@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { CATEGORIES } from "@/lib/constants";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Slide {
   heading: string;
@@ -69,13 +70,29 @@ export default function HeroSlider() {
       <div className="absolute inset-0 bg-ink/25" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-6 text-center">
-        <h1 className="font-display text-4xl italic leading-tight sm:text-5xl">
-          {SLIDES[active].heading}
-        </h1>
-        <p className="mt-4 max-w-xl text-white/85">{SLIDES[active].subheading}</p>
+        <div className="min-h-[140px] flex flex-col items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center"
+            >
+              <h1 className="font-display text-4xl italic leading-tight sm:text-5xl">
+                {SLIDES[active].heading}
+              </h1>
+              <p className="mt-4 max-w-xl text-white/85">{SLIDES[active].subheading}</p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-        <form
+        <motion.form
           onSubmit={handleSearch}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="mt-8 flex w-full max-w-xl items-center gap-2 rounded-full bg-white p-1.5 shadow-lift"
         >
           <Search size={18} className="ml-3 shrink-0 text-ink-faint" />
@@ -88,9 +105,14 @@ export default function HeroSlider() {
           <button type="submit" className="btn btn-primary btn-sm rounded-full">
             Search
           </button>
-        </form>
+        </motion.form>
 
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-5 flex flex-wrap justify-center gap-2"
+        >
           {CHIP_CATEGORIES.map((c) => (
             <Link
               key={c}
@@ -100,14 +122,20 @@ export default function HeroSlider() {
               {c}
             </Link>
           ))}
-        </div>
+        </motion.div>
 
-        <Link
-          href="/explore"
-          className="btn btn-outline mt-7 gap-1.5 border-white text-white hover:bg-pink-100 hover:text-white"
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          Browse Now <ArrowRight size={15} />
-        </Link>
+          <Link
+            href="/explore"
+            className="btn btn-outline mt-7 gap-1.5 border-white text-white hover:bg-pink-100 hover:text-white"
+          >
+            Browse Now <ArrowRight size={15} />
+          </Link>
+        </motion.div>
       </div>
 
       <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2">

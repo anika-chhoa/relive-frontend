@@ -6,6 +6,22 @@ import { useQuery } from "@tanstack/react-query";
 import { getItems } from "@/lib/api";
 import ItemCard from "@/components/ItemCard";
 import ItemCardSkeleton from "@/components/ItemCardSkeleton";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } },
+} as const;
 
 export default function FeaturedListings() {
   const { data, isLoading } = useQuery({
@@ -15,7 +31,13 @@ export default function FeaturedListings() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-wrap items-end justify-between gap-4"
+      >
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-cta">
             Fresh on Relive
@@ -33,13 +55,27 @@ export default function FeaturedListings() {
         >
           View All <ArrowRight size={15} />
         </Link>
-      </div>
+      </motion.div>
 
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-100px" }}
+        className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4"
+      >
         {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => <ItemCardSkeleton key={i} />)
-          : data?.items.map((item) => <ItemCard key={item._id} item={item} />)}
-      </div>
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <motion.div key={i} variants={cardVariants}>
+                <ItemCardSkeleton />
+              </motion.div>
+            ))
+          : data?.items.map((item) => (
+              <motion.div key={item._id} variants={cardVariants} className="h-full w-full">
+                <ItemCard item={item} />
+              </motion.div>
+            ))}
+      </motion.div>
 
       {!isLoading && data?.items.length === 0 && (
         <p className="mt-10 text-center text-sm text-ink-muted">
