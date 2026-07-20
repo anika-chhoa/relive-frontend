@@ -165,7 +165,7 @@ export default function ChatPage() {
           e.preventDefault();
           handleSend();
         }}
-        className="flex items-center gap-2 border-t border-border py-4"
+        className="flex items-center gap-2 border-t border-border py-4 mb-8"
       >
         <input
           value={input}

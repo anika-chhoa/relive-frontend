@@ -63,13 +63,12 @@ export default function AdminPage() {
   const { user, isPending: sessionPending } = useAppSession();
   const [tab, setTab] = useState<Tab>("overview");
 
-  console.log("[AdminPage]", { sessionPending, user });
   useEffect(() => {
     if (sessionPending) return;
     if (!user) {
       router.replace("/login?redirect=/admin");
     } else if (!user.isAdmin) {
-      router.replace("/");
+      router.replace("/unauthorized?reason=forbidden");
     }
   }, [sessionPending, user, router]);
 
@@ -127,7 +126,6 @@ function OverviewTab() {
     queryKey: ["admin-overview"],
     queryFn: getAdminOverview,
   });
-  console.log("Admin Overview Data From API:", data);
   if (isLoading) return <div className="skeleton h-64 w-full rounded-card" />;
   if (!data) return null;
 

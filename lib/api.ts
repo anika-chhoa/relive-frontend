@@ -108,6 +108,21 @@ export async function logout(): Promise<void> {
   });
 }
 
+export async function updateMyProfile(input: {
+  name?: string;
+  image?: string | null;
+}): Promise<RelivUser> {
+  const res = await fetch(`${API_URL}/api/auth/me`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(await parseAuthError(res));
+  const data: AuthResponse = await res.json();
+  return data.user;
+}
+
 interface CloudinarySignatureResponse {
   timestamp: number;
   signature: string;
