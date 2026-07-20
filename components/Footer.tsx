@@ -11,19 +11,19 @@ export default function Footer() {
   const iconHoverAnimation = {
     scale: 1.1,
     y: -3,
-    transition: { duration: 0.2, ease: "easeOut" }
+    transition: { duration: 0.2, ease: "easeOut" as const },
   };
 
   const textHoverAnimation = {
     x: 4,
     color: "#fff",
-    transition: { duration: 0.2, ease: "easeInOut" }
+    transition: { duration: 0.2, ease: "easeInOut" as const },
   };
 
   const legalHoverAnimation = {
     y: -1,
     color: "#fff",
-    transition: { duration: 0.2, ease: "easeInOut" }
+    transition: { duration: 0.2, ease: "easeInOut" as const },
   };
 
   const socialLinks = [

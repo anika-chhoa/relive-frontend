@@ -16,8 +16,8 @@ export default function HomePage() {
       <FeaturedListings />
        <HowItWorks />
       <StatsStrip />
-      <TestimonialsSection />
       <WhyChooseUs />
+      <TestimonialsSection />
       <FAQSection />
       <CTABanner />
     </div>
