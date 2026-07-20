@@ -22,16 +22,16 @@ export default function Navbar() {
   const isLoggedIn = Boolean(user);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // ইউজার এডমিন কিনা তার উপর ভিত্তি করে ড্যাশবোর্ড প্যাথ নির্ধারণ করা হয়েছে
   const dashboardHref = user?.isAdmin ? "/admin" : "/dashboard";
 
   const loggedInLinks: NavLink[] = [
     { href: "/", label: "Home" },
     { href: "/explore", label: "Explore" },
-    { href: "/about", label: "About" },
     { href: "/items/manage", label: "Manage Items" },
-    { href: dashboardHref, label: "Dashboard" }, // এখানে কন্ডিশনাল পাথ কাজ করবে
+    { href: dashboardHref, label: "Dashboard" },
     { href: "/chat", label: "Chat" },
+    { href: "/about", label: "About" },
+    { href: "/privacy", label: "Privacy" },
   ];
 
   const links = isLoggedIn ? loggedInLinks : LOGGED_OUT_LINKS;
@@ -76,7 +76,7 @@ export default function Navbar() {
                 className="btn btn-primary btn-sm gap-1.5 shadow-soft"
               >
                 <Plus size={16} strokeWidth={2.5} />
-                Sell
+                Add Items for Sale
               </Link>
 
               {/* daisyUI CSS-only dropdown — no click-outside JS needed */}

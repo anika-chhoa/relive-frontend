@@ -4,6 +4,7 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleButton from "@/components/GoogleButton";
 import { registerWithCredentials, uploadAvatarToCloudinary } from "@/lib/api";
 import { signIn } from "@/lib/authClient";
+import toast from "react-hot-toast";
 import { Camera, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
@@ -129,11 +130,12 @@ export default function RegisterPage() {
         password: values.password,
         image: avatarUrl || undefined, // optional — profile photo is not required
       });
+      toast.success("Account created successfully!");
       window.location.href = "/";
     } catch (err) {
-      setFormError(
-        err instanceof Error ? err.message : "Could not create your account",
-      );
+      const msg = err instanceof Error ? err.message : "Could not create your account";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

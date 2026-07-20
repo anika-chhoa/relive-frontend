@@ -4,6 +4,7 @@ import { deleteItem, getMyItems } from "@/lib/api";
 import { useAppSession } from "@/lib/useAppSession";
 import type { Item } from "@/types/domain";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { Eye, Loader2, PackageOpen, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -67,10 +68,11 @@ export default function ManageItemsPage() {
       queryClient.invalidateQueries({ queryKey: ["my-items"] });
       dialogRef.current?.close();
       setPendingDelete(null);
+      toast.success("Listing deleted successfully");
     } catch (err) {
-      setDeleteError(
-        err instanceof Error ? err.message : "Could not delete this listing",
-      );
+      const msg = err instanceof Error ? err.message : "Could not delete this listing";
+      setDeleteError(msg);
+      toast.error(msg);
     } finally {
       setDeleting(false);
     }

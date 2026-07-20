@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { useAppSession } from "@/lib/useAppSession";
 import { createItem } from "@/lib/api";
@@ -9,6 +11,7 @@ import ItemForm, { type ItemFormValues } from "@/components/ItemForm";
 
 export default function AddItemPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user, isPending } = useAppSession();
 
   useEffect(() => {
@@ -28,7 +31,9 @@ export default function AddItemPage() {
 
   async function handleSubmit(values: ItemFormValues, images: string[]) {
     const created = await createItem({ ...values, images });
-    router.push(`/items/manage?added=${created.id}`);
+    queryClient.invalidateQueries({ queryKey: ["my-items"] });
+    toast.success("Listing published successfully");
+    router.push(`/items/manage`);
   }
 
   return (

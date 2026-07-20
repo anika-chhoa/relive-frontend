@@ -2,6 +2,7 @@
 
 import { uploadAvatarToCloudinary } from "@/lib/api";
 import type { RelivUser } from "@/types/domain";
+import toast from "react-hot-toast";
 import {
   Camera,
   Check,
@@ -103,8 +104,11 @@ export default function ProfileCard({
       setEditing(false);
       setAvatarPreview(null);
       setAvatarUrl(null);
+      toast.success("Profile updated successfully");
     } catch (err) {
-      setFieldError(err instanceof Error ? err.message : "Could not update profile");
+      const msg = err instanceof Error ? err.message : "Could not update profile";
+      setFieldError(msg);
+      toast.error(msg);
     }
   }
 

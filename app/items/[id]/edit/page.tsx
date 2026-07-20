@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { useAppSession } from "@/lib/useAppSession";
 import { getItemById, updateItem } from "@/lib/api";
 import ItemForm, { type ItemFormValues } from "@/components/ItemForm";
 
-export default function EditItemPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function EditItemPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { user, isPending: sessionPending } = useAppSession();
 
   const { data: item, isLoading: itemLoading, isError } = useQuery({
@@ -63,7 +69,10 @@ export default function EditItemPage({ params }: { params: { id: string } }) {
 
   async function handleSubmit(values: ItemFormValues, images: string[]) {
     await updateItem(id, { ...values, images });
-    router.push("/items/manage?updated=1");
+    queryClient.invalidateQueries({ queryKey: ["my-items"] });
+    queryClient.invalidateQueries({ queryKey: ["item", id] });
+    toast.success("Listing updated successfully");
+    router.push("/items/manage");
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { Eye, EyeOff, Sparkles } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleButton from "@/components/GoogleButton";
@@ -63,9 +64,12 @@ export default function LoginPage() {
     setFormError("");
     try {
       await loginWithCredentials({ email: values.email, password: values.password });
+      toast.success("Welcome back!");
       window.location.href = "/";
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Invalid email or password");
+      const msg = err instanceof Error ? err.message : "Invalid email or password";
+      setFormError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

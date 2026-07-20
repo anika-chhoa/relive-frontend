@@ -9,6 +9,7 @@ import {
 } from "@/lib/api";
 import { useAppSession } from "@/lib/useAppSession";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import {
   Loader2,
   ShieldCheck,
@@ -269,6 +270,9 @@ function ItemsTab() {
     try {
       await adminDeleteItem(id);
       queryClient.invalidateQueries({ queryKey: ["admin-items"] });
+      toast.success("Listing removed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not remove this listing");
     } finally {
       setRemovingId(null);
     }
@@ -364,6 +368,9 @@ function UsersTab() {
     try {
       await toggleSuspendUser(id, !current);
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success(current ? "User unsuspended" : "User suspended");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update this user");
     } finally {
       setUpdatingId(null);
     }

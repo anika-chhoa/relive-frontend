@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import toast from "react-hot-toast";
 import { Sparkles, Wand2, RotateCcw, Loader2 } from "lucide-react";
 import ImageUploader from "@/components/ImageUploader";
 import { CATEGORIES, CONDITIONS, LENGTH_OPTIONS } from "@/lib/constants";
@@ -141,7 +142,9 @@ export default function ItemForm({
     try {
       await onSubmit(values, images);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setSubmitError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -154,12 +157,6 @@ export default function ItemForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
-      {submitError && (
-        <div className="rounded-field border border-error/30 bg-error/10 px-4 py-2.5 text-sm text-error">
-          {submitError}
-        </div>
-      )}
-
       {/* Images */}
       <div>
         <label className="mb-1.5 block text-sm font-medium text-ink">Photos</label>

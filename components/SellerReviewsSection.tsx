@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { getSellerReviews, createReview } from "@/lib/api";
@@ -53,8 +54,11 @@ export default function SellerReviewsSection({
       queryClient.invalidateQueries({ queryKey: ["seller-reviews", sellerId] });
       queryClient.invalidateQueries({ queryKey: ["item", itemId] });
       queryClient.invalidateQueries({ queryKey: ["featured-reviews"] });
+      toast.success("Review submitted successfully");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not submit your review");
+      const msg = err instanceof Error ? err.message : "Could not submit your review";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
