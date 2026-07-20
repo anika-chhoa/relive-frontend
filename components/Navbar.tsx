@@ -17,21 +17,24 @@ const LOGGED_OUT_LINKS: NavLink[] = [
   { href: "/about", label: "About" },
 ];
 
-const LOGGED_IN_LINKS: NavLink[] = [
-  { href: "/", label: "Home" },
-  { href: "/explore", label: "Explore" },
-  { href: "/about", label: "About" },
-  { href: "/items/manage", label: "Manage Items" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/chat", label: "Chat" },
-];
-
 export default function Navbar() {
   const { user, isPending, refresh } = useAppSession();
   const isLoggedIn = Boolean(user);
-  const links = isLoggedIn ? LOGGED_IN_LINKS : LOGGED_OUT_LINKS;
-
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // ইউজার এডমিন কিনা তার উপর ভিত্তি করে ড্যাশবোর্ড প্যাথ নির্ধারণ করা হয়েছে
+  const dashboardHref = user?.isAdmin ? "/admin" : "/dashboard";
+
+  const loggedInLinks: NavLink[] = [
+    { href: "/", label: "Home" },
+    { href: "/explore", label: "Explore" },
+    { href: "/about", label: "About" },
+    { href: "/items/manage", label: "Manage Items" },
+    { href: dashboardHref, label: "Dashboard" }, // এখানে কন্ডিশনাল পাথ কাজ করবে
+    { href: "/chat", label: "Chat" },
+  ];
+
+  const links = isLoggedIn ? loggedInLinks : LOGGED_OUT_LINKS;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">

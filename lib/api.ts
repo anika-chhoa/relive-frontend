@@ -363,3 +363,14 @@ export async function getPublicStats(): Promise<PublicStats> {
   if (!res.ok) throw new Error(data.error || "Could not load stats");
   return data as PublicStats;
 }
+
+export async function confirmPayment(sessionId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/api/payments/confirm/${sessionId}`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Could not confirm payment");
+  }
+}

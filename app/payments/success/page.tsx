@@ -1,11 +1,11 @@
 "use client";
 
-import { getPaymentSessionStatus } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { getPaymentSessionStatus, confirmPayment } from "@/lib/api";
 
 // 1. Core Logic Component
 function PaymentSuccessContent() {
@@ -13,10 +13,13 @@ function PaymentSuccessContent() {
   const sessionId = searchParams.get("session_id");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["payment-session", sessionId],
-    queryFn: () => getPaymentSessionStatus(sessionId as string),
-    enabled: Boolean(sessionId),
-  });
+  queryKey: ["payment-session", sessionId],
+  queryFn: async () => {
+    await confirmPayment(sessionId as string).catch(() => {});
+    return getPaymentSessionStatus(sessionId as string);
+  },
+  enabled: Boolean(sessionId),
+});
 
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center px-6 text-center">
