@@ -1,7 +1,8 @@
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <Navbar />
           <main>{children}</main>
-          
+          <Footer />
         </Providers>
       </body>
     </html>

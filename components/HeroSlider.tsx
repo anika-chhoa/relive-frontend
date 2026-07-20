@@ -34,7 +34,7 @@ const SLIDES: Slide[] = [
 ];
 
 const PLACEHOLDER_QUERIES = ["iPhone...", "Sofa...", "Bicycle...", "Camera...", "Study table..."];
-const CHIP_CATEGORIES = CATEGORIES.slice(0, 6);
+const CHIP_CATEGORIES = CATEGORIES.slice(0, 5);
 
 export default function HeroSlider() {
   const router = useRouter();
@@ -104,7 +104,7 @@ export default function HeroSlider() {
 
         <Link
           href="/explore"
-          className="btn btn-outline mt-7 gap-1.5 border-white text-white hover:bg-white hover:text-ink"
+          className="btn btn-outline mt-7 gap-1.5 border-white text-white hover:bg-pink-100 hover:text-white"
         >
           Browse Now <ArrowRight size={15} />
         </Link>
